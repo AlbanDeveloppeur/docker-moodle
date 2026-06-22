@@ -2,7 +2,6 @@
 
 php /var/www/html/admin/cli/install.php \
     --wwwroot=http://localhost:8080 \
-    --lang=fr \
     --dataroot=/var/www/moodledata \
     --dbtype=$MOODLE_DB_TYPE \
     --dbhost=$MOODLE_DB_HOST \

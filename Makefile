@@ -15,6 +15,10 @@ DOCKER_RUN = $(DOCKER_COMPOSE) run
 DOCKER_EXEC = $(DOCKER) exec
 #------------#
 
+#---LINUX---#
+USER := $(shell whoami)
+#-----------#
+
 ##=== 🆘  HELP ==================================================
 help: ## Show this help.
 	@echo "Moodle-And-Docker-Makefile"
@@ -52,20 +56,26 @@ moodle-install: ## Install Moodle
 	sudo apt install unzip
 
 	sudo rm -rdf ./moodle_data
-	mkdir ./moodle_data
-	unzip ./assets/moodle/version/5.2.1/moodle-5.2.1.zip -d /tmp
-	mv /tmp/moodle/* ./moodle_data
+	sudo mkdir ./moodle_data
+
+	sudo unzip ./assets/moodle/version/5.2.1/moodle-5.2.1.zip -d /tmp
+	sudo mv /tmp/moodle/* ./moodle_data
 	sudo rm -rdf /tmp/moodle
+
+	sleep 5
 
 	$(DOCKER_COMPOSE_UP)
 
-	sleep 10
+	sleep 5
 
 	$(DOCKER_RUN) --rm moodle bash -c "chown www-data /var/www/html"
 	$(DOCKER_RUN) --rm moodle sh -c "sh /var/www/assets/scripts/install_moodle.sh"
+
+	sudo chmod -R 777 ./
+	sudo chown -R $(USER):$(USER) ./
 .PHONY: moodle-install
 
 moodle-down: ## Uninstall moodle containers and folders
 	$(DOCKER_COMPOSE_DOWN)
-	sudo rm -rdf moodle_data
+	sudo rm -rdf moodle_data/
 .PHONY: moodle-down
