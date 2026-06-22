@@ -15,6 +15,11 @@ DOCKER_RUN = $(DOCKER_COMPOSE) run
 DOCKER_EXEC = $(DOCKER) exec
 #------------#
 
+#---MOODLE---#
+MOODLE_VERSION = 5.2.1
+MOODLE_ZIP_FILE = moodle-$(MOODLE_VERSION).zip
+#------------#
+
 #---LINUX---#
 USER := $(shell whoami)
 #-----------#
@@ -58,7 +63,7 @@ moodle-install: ## Install Moodle
 	sudo rm -rdf ./moodle_data
 	sudo mkdir ./moodle_data
 
-	sudo unzip ./assets/moodle/version/5.2.1/moodle-5.2.1.zip -d /tmp
+	sudo unzip ./assets/moodle/version/$(MOODLE_ZIP_FILE) -d /tmp
 	sudo mv /tmp/moodle/* ./moodle_data
 	sudo rm -rdf /tmp/moodle
 
