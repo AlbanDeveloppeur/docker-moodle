@@ -24,7 +24,6 @@ services:
   moodle_database:
     container_name: moodle_database
     image: postgres:18-alpine
-    restart: always
     ports:
       - 5432:5432
     environment:
