@@ -16,8 +16,8 @@ DOCKER_EXEC = $(DOCKER) exec
 #------------#
 
 #---MOODLE---#
-MOODLE_VERSION = 5.2.1
-MOODLE_ZIP_FILE = moodle-$(MOODLE_VERSION).zip
+MOODLE_FOLDER_NAME = moodle-MOODLE_502_STABLE
+MOODLE_ZIP_FILE = $(MOODLE_FOLDER_NAME).zip
 #------------#
 
 #---LINUX---#
@@ -57,15 +57,15 @@ docker-bash: ## Open container bash | need $container variable
 moodle-install: ## Install Moodle
 	$(DOCKER_COMPOSE_STOP)
 
-	sudo apt update
-	sudo apt install unzip
+# 	sudo apt update
+# 	sudo apt install unzip
 
 	sudo rm -rdf ./moodle_data
 	sudo mkdir ./moodle_data
 
 	sudo unzip ./assets/moodle/version/$(MOODLE_ZIP_FILE) -d /tmp
-	sudo mv /tmp/moodle/* ./moodle_data
-	sudo rm -rdf /tmp/moodle
+	sudo mv /tmp/$(MOODLE_FOLDER_NAME)/* ./moodle_data
+	sudo rm -rdf /tmp/$(MOODLE_FOLDER_NAME)
 
 	sleep 5
 
@@ -84,3 +84,7 @@ moodle-down: ## Uninstall moodle containers and folders
 	$(DOCKER_COMPOSE_DOWN)
 	sudo rm -rdf moodle_data/
 .PHONY: moodle-down
+
+moodle-purge-caches: ## Purging all caches from Moodle app
+	$(DOCKER_EXEC) -it moodle /bin/bash -c "php admin/cli/purge_caches.php"
+.PHONY: moodle-purge-caches
