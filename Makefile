@@ -1,3 +1,7 @@
+ifndef VERBOSE
+.SILENT:
+endif
+
 #---VARIABLES---------------------------------#
 
 #---DOCKER---#
@@ -16,8 +20,11 @@ DOCKER_EXEC = $(DOCKER) exec
 #------------#
 
 #---MOODLE---#
-MOODLE_FOLDER_NAME = moodle-MOODLE_502_STABLE
-MOODLE_ZIP_FILE = $(MOODLE_FOLDER_NAME).zip
+MOODLE_TMP_DIR = /tmp
+MOODLE_WGET_URL = https://download.moodle.org/download.php/direct/stable$(MOODLE_VERSION)/$(MOODLE_TGZ_NAME)
+MOODLE_TGZ_NAME = moodle-latest-$(MOODLE_VERSION).tgz
+MOODLE_WGET = wget -P $(MOODLE_TMP_DIR) $(MOODLE_WGET_URL)
+MOODLE_TMP_FOLDER = moodle
 #------------#
 
 #---LINUX---#
@@ -35,37 +42,31 @@ help: ## Show this help.
 #---------------------------------------------#
 
 ##=== 🐳  DOCKER ================================
-docker-up: ## Start docker containers.
-	$(DOCKER_COMPOSE_UP)
-.PHONY: docker-up
-
-docker-stop: ## Stop docker containers
-	$(DOCKER_COMPOSE_STOP)
-.PHONY: docker-stop
-
+.PHONY: docker-down
 docker-down: ## Delete docker containers
 	$(DOCKER_COMPOSE_DOWN)
-.PHONY: docker-down
 
-docker-bash: ## Open container bash | need $container variable
+.PHONY: docker-bash
+docker-bash: ## Open container bash | need "container" variable
 	$(DOCKER_COMPOSE_UP) $(container)
 	$(DOCKER_EXEC) -it $(container) /bin/bash
-.PHONY: docker-bash
 
 ##=== Ⓜ️  MOODLE ===============================
-
-moodle-install: ## Install Moodle
+.PHONY: moodle-install
+moodle-install: ## Install Moodle | need "MOODLE_VERSION" variable
 	$(DOCKER_COMPOSE_STOP)
 
-# 	sudo apt update
-# 	sudo apt install unzip
+	sudo apt update
+	sudo apt install tar
 
 	sudo rm -rdf ./moodle_data
 	sudo mkdir ./moodle_data
 
-	sudo unzip ./assets/moodle/version/$(MOODLE_ZIP_FILE) -d /tmp
-	sudo mv /tmp/$(MOODLE_FOLDER_NAME)/* ./moodle_data
-	sudo rm -rdf /tmp/$(MOODLE_FOLDER_NAME)
+	$(MOODLE_WGET)
+
+	sudo tar -xvzf $(MOODLE_TMP_DIR)/$(MOODLE_TGZ_NAME) -C $(MOODLE_TMP_DIR)
+	sudo mv $(MOODLE_TMP_DIR)/$(MOODLE_TMP_FOLDER)/* ./moodle_data
+	sudo rm -rdf $(MOODLE_TMP_DIR)/$(MOODLE_TMP_FOLDER) $(MOODLE_TMP_DIR)/$(MOODLE_TGZ_NAME)
 
 	sleep 5
 
@@ -78,13 +79,22 @@ moodle-install: ## Install Moodle
 
 	sudo chmod -R 777 ./
 	sudo chown -R $(USER):$(USER) ./
-.PHONY: moodle-install
 
+	$(info [OK] Moodle is running on localhost:8080)
+
+.PHONY: moodle-start
+moodle-start: ## Start Moodle containers.
+	$(DOCKER_COMPOSE_UP)
+
+.PHONY: moodle-stop
+moodle-stop: ## Stop Moodle containers
+	$(DOCKER_COMPOSE_STOP)
+
+.PHONY: moodle-down
 moodle-down: ## Uninstall moodle containers and folders
 	$(DOCKER_COMPOSE_DOWN)
 	sudo rm -rdf moodle_data/
-.PHONY: moodle-down
 
+.PHONY: moodle-purge-caches
 moodle-purge-caches: ## Purging all caches from Moodle app
 	$(DOCKER_EXEC) -it moodle /bin/bash -c "php admin/cli/purge_caches.php"
-.PHONY: moodle-purge-caches

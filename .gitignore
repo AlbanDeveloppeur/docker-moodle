@@ -1,4 +1,5 @@
 moodle_data
 assets/moodle/version/*.zip
 assets/moodle/version/*.tar
+assets/moodle/version/*.tgz
 .vscode
