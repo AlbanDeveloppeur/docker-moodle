@@ -28,6 +28,11 @@ make moodle-install MOODLE_VERSION=XXX
 
 Une fois l'installation terminé, accédez à l'url `localhost:8080` pour ouvrir l'application Moodle.
 
+Les identifiants par défaut :
+
+Identifiant : admin
+Mot de passe : !Azerty12345
+
 ## Désinstaller Moodle et les containers
 Lancez la commande :
 ```
