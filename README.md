@@ -3,12 +3,12 @@
 Commande `make` pour afficher les possibilités
 
 ```
-=== 🆘  HELP ==================================================
+=== 🆘  HELP ==================================
 help                           Show this help.
 === 🐳  DOCKER ================================
 docker-down                    Delete docker containers
-docker-bash                    Open container bash | need "container" variable
-=== Ⓜ️  MOODLE ===============================
+docker-bash                    Open container bash | need "CONTAINER" variable
+=== 📖  MOODLE ===============================
 moodle-install                 Install Moodle | need "MOODLE_VERSION" variable
 moodle-start                   Start Moodle containers.
 moodle-stop                    Stop Moodle containers
@@ -28,10 +28,11 @@ make moodle-install MOODLE_VERSION=XXX
 
 Une fois l'installation terminé, accédez à l'url `localhost:8080` pour ouvrir l'application Moodle.
 
-Les identifiants par défaut :
-
-Identifiant : admin
-Mot de passe : !Azerty12345
+> [!NOTE]
+> Les identifiants par défaut\
+>\
+> **Identifiant** : admin\
+> **Mot de passe** : !Azerty12345
 
 ## Désinstaller Moodle et les containers
 Lancez la commande :
